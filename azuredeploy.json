@@ -49,6 +49,17 @@
             "metadata": {
                 "description": "Location for all resources."
             }
+        },
+        "scriptType": {
+            "type": "string",
+            "defaultValue": "inline",
+            "metadata": {
+                "description": "specification of script code: inline or download"
+            },
+            "allowedValues": [
+                "inline",
+                "download"
+            ]
         }
     },
     "variables": {
@@ -172,8 +183,9 @@
                 {
                     "apiVersion": "2018-06-01",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "[concat(variables('vmName'),'/vmEnableWinRM')]",
+                    "name": "[concat(variables('vmName'),'/vmInlineScript')]",
                     "location": "[parameters('location')]",
+                    "condition": "[equals(parameters('scriptType'),'inline')]",
                     "dependsOn": [
                         "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
                     ],
@@ -184,6 +196,28 @@
                         "autoUpgradeMinorVersion": true,
                         "protectedSettings": {
                             "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -encodedcommand RQBuAGEAYgBsAGUALQBQAFMAUgBlAG0AbwB0AGkAbgBnACAALQBmAG8AcgBjAGUA"
+                        }
+                    }
+                },
+                {
+                    "apiVersion": "2018-06-01",
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "name": "[concat(variables('vmName'),'/vmDownloadScript')]",
+                    "location": "[parameters('location')]",
+                    "condition": "[equals(parameters('scriptType'),'download')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Compute",
+                        "type": "CustomScriptExtension",
+                        "typeHandlerVersion": "1.8",
+                        "autoUpgradeMinorVersion":true,
+                        "settings": {
+                            "fileUris": [
+                                "https://raw.githubusercontent.com/wkasdorp/win10-poc/master/Configure-VM.ps1"
+                            ],
+                            "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File ConfigureVM.ps1"
                         }
                     }
                 }
