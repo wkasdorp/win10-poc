@@ -217,7 +217,7 @@
                             "fileUris": [
                                 "https://raw.githubusercontent.com/wkasdorp/win10-poc/master/Configure-VM.ps1"
                             ],
-                            "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File ConfigureVM.ps1"
+                            "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File Configure-VM.ps1"
                         }
                     }
                 }
