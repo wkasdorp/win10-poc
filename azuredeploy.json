@@ -52,7 +52,7 @@
     },
     "scriptType": {
       "type": "string",
-      "defaultValue": "inline",
+      "defaultValue": "download",
       "metadata": {
         "description": "specification of script code: inline or download"
       },
