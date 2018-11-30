@@ -217,7 +217,7 @@
               "fileUris": [
                 "https://raw.githubusercontent.com/wkasdorp/win10-poc/master/Enable-WinRM.ps1"
               ],
-              "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File Enable-WinRM.ps1"
+              "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File Enable-WinRM.ps1 -SkipNetworkProfileCheck $true"
             }
           }
         }
