@@ -259,6 +259,10 @@
     "vm-fqdn": {
       "type": "string",
       "value": "[reference(variables('vmIP01Name')).dnsSettings.fqdn]"
+    },
+    "downloadURL": {
+      "type": "string",
+      "value": "[reference(variables('scriptEnableWinRM'))]"
     }
   }
 }
