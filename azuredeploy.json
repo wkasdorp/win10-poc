@@ -262,7 +262,7 @@
     },
     "downloadURL": {
       "type": "string",
-      "value": "[reference(variables('scriptEnableWinRM'))]"
+      "value": "[variables('scriptEnableWinRM')]"
     }
   }
 }
