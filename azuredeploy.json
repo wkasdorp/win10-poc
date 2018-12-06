@@ -60,6 +60,23 @@
         "inline",
         "download"
       ]
+    },
+    "scriptLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "download URL, either public GIT repo or Storage Account."
+      },
+      "allowedValues": [
+        "https://sawin10poc.blob.core.windows.net/scripts/",
+        "https://raw.githubusercontent.com/wkasdorp/win10-poc/master/"    
+      ]
+    },
+    "_sasKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "When using a storage account, provide the SAS key."
+      },
+      "defaultValue": ""
     }
   },
   "variables": {
@@ -76,7 +93,8 @@
     "vmSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'Vnet01', variables('Vnet01Subnet1Name'))]",
     "vmStorageAccountContainerName": "vhds",
     "vmNicName": "[concat(variables('vmName'), '-nic')]",
-    "vmIP01Name": "VMIP01"
+    "vmIP01Name": "VMIP01",
+    "scriptEnableWinRM": "[concat(parameters('scriptLocation'),'Enable-WinRM.ps1',parameters('_sasKey'))]"
   },
   "resources": [
     {
@@ -215,7 +233,7 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
-                "https://raw.githubusercontent.com/wkasdorp/win10-poc/master/Enable-WinRM.ps1"
+                "[variables('scriptEnableWinRM')]"
               ],
               "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File Enable-WinRM.ps1 -SkipNetworkProfileCheck $true"
             }
