@@ -116,7 +116,7 @@
     "scriptFolderName": "scripts/",
     "scriptName": "Enable-WinRM.ps1",
     "scriptDownload": "[concat(parameters('scriptLocation'), variables('scriptFoldername'), variables('scriptName'))]",
-    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File ',variables('scriptFoldername'),variables('scriptName'),' -SkipNetworkProfileCheck $true')]"
+    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File ',variables('scriptName'),' -SkipNetworkProfileCheck $true')]"
   },
   "resources": [
     {
