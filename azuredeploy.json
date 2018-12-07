@@ -116,7 +116,7 @@
     "scriptFolderName": "scripts/",
     "scriptName": "Enable-WinRM.ps1",
     "scriptDownload": "[concat(parameters('scriptLocation'), variables('scriptFoldername'), variables('scriptName'))]",
-    "scriptPath": "[concat(variables('scriptFoldername'), variables('scriptName'))]"
+    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File ',variables('scriptFoldername'),variables('scriptName'),' -SkipNetworkProfileCheck $true')]"
   },
   "resources": [
     {
@@ -257,7 +257,7 @@
               "fileUris": [
                 "[variables('scriptDownload')]"
               ],
-              "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File [variables('scriptPath')] -SkipNetworkProfileCheck $true"
+              "commandToExecute": "[variables('commandToExecute')]"
             }
           }
         },
@@ -279,7 +279,7 @@
               "fileUris": [
                 "[variables('scriptDownload')]"
               ],
-              "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File [variables('scriptPath')] -SkipNetworkProfileCheck $true"
+              "commandToExecute": "[variables('commandToExecute')]"
             },
             "protectedSettings": {
               "storageAccountName": "[parameters('storageAccountName')]",
@@ -287,7 +287,6 @@
             }
           }
         }
-
       ]
     },
     {
