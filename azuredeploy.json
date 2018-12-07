@@ -61,20 +61,39 @@
         "download"
       ]
     },
+    "downloadType": {
+      "type": "string",
+      "defaultValue": "Storage Account",
+      "allowedValues": [
+        "Storage Account",
+        "Public URL"
+      ],
+      "metadata": {
+        "description": "When using a download location, specify to use a Storage account or a public URL."
+      }
+    },
     "scriptLocation": {
       "type": "string",
       "metadata": {
-        "description": "download URL, either public GIT repo or Storage Account."
+        "description": "Provide the toplevel download URL."
       },
+      "defaultValue": "https://sawin10poc.blob.core.windows.net/",
       "allowedValues": [
-        "https://sawin10poc.blob.core.windows.net/scripts/",
-        "https://raw.githubusercontent.com/wkasdorp/win10-poc/master/"    
-      ]
+        "https://raw.githubusercontent.com/wkasdorp/win10-poc/master/",
+        "https://sawin10poc.blob.core.windows.net/"
+      ]   
     },
-    "_sasKey": {
+    "storageAccountName": {
       "type": "securestring",
       "metadata": {
-        "description": "When using a storage account, provide the SAS key."
+        "description": "When using a storage account, provide the storage account name."
+      },
+      "defaultValue": "sawin10poc"
+    },
+    "storageAccountkey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "When using a storage account, provide the Storage Account key."
       },
       "defaultValue": ""
     }
@@ -94,7 +113,10 @@
     "vmStorageAccountContainerName": "vhds",
     "vmNicName": "[concat(variables('vmName'), '-nic')]",
     "vmIP01Name": "VMIP01",
-    "scriptEnableWinRM": "[concat(parameters('scriptLocation'),'Enable-WinRM.ps1',parameters('_sasKey'))]"
+    "scriptFolderName": "scripts/",
+    "scriptName": "Enable-WinRM.ps1",
+    "scriptDownload": "[concat(parameters('scriptLocation'), variables('scriptFoldername'), variables('scriptName'))]",
+    "scriptPath": "[concat(variables('scriptFoldername'), variables('scriptName'))]"
   },
   "resources": [
     {
@@ -220,9 +242,9 @@
         {
           "apiVersion": "2018-06-01",
           "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(variables('vmName'),'/vmDownloadScript')]",
+          "name": "[concat(variables('vmName'),'/vmDownloadScriptPublic')]",
           "location": "[parameters('location')]",
-          "condition": "[equals(parameters('scriptType'),'download')]",
+          "condition": "[and(equals(parameters('scriptType'),'download'), equals(parameters('downloadType'),'Public URL'))]",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
           ],
@@ -233,12 +255,39 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
-                "[variables('scriptEnableWinRM')]"
+                "[variables('scriptDownload')]"
               ],
-              "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File Enable-WinRM.ps1 -SkipNetworkProfileCheck $true"
+              "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File [variables('scriptPath')] -SkipNetworkProfileCheck $true"
+            }
+          }
+        },
+        {
+          "apiVersion": "2018-06-01",
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(variables('vmName'),'/vmDownloadScriptStorageAccount')]",
+          "location": "[parameters('location')]",
+          "condition": "[and(equals(parameters('scriptType'),'download'), equals(parameters('downloadType'),'Storage Account'))]",          
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "typeHandlerVersion": "1.8",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "[variables('scriptDownload')]"
+              ],
+              "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File [variables('scriptPath')] -SkipNetworkProfileCheck $true"
+            },
+            "protectedSettings": {
+              "storageAccountName": "[parameters('storageAccountName')]",
+              "storageAccountKey": "[parameters('storageAccountKey')]"
             }
           }
         }
+
       ]
     },
     {
